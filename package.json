@@ -1,0 +1,17 @@
+{
+  "name": "campus-blink-pass",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@10.4.1",
+  "scripts": {
+    "dev:api": "corepack pnpm --filter @campus/actions-api dev",
+    "dev:web": "corepack pnpm --filter @campus/organizer-web dev",
+    "build": "corepack pnpm -r --filter @campus/* --if-present build",
+    "typecheck": "corepack pnpm -r --filter @campus/* --if-present typecheck",
+    "smoke:api": "node scripts/smoke-actions-api.mjs",
+    "smoke:organizer": "node scripts/smoke-organizer-api.mjs",
+    "smoke:web": "node scripts/smoke-organizer-web.mjs",
+    "verify:api": "node scripts/verify-api.mjs",
+    "verify:api:real": "node scripts/verify-api-real-mint.mjs"
+  }
+}

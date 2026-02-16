@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Campus Blink Pass Verifier</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="ambient ambient-top"></div>
+    <div class="ambient ambient-bottom"></div>
+
+    <main class="page">
+      <header class="hero card reveal">
+        <p class="eyebrow">Solana Blink Event Pass</p>
+        <h1>Verifier Console</h1>
+        <p class="subtitle">
+          Cek status peserta berdasarkan wallet atau validasi bukti aksi via <code>txRef</code>.
+        </p>
+
+        <div class="settings">
+          <label for="apiBase">API Base</label>
+          <input id="apiBase" type="url" value="http://localhost:3001" />
+        </div>
+      </header>
+
+      <section class="grid">
+        <article class="card reveal stagger-1">
+          <h2>Wallet Verification</h2>
+          <form id="walletForm" class="form">
+            <label for="eventId">Event ID</label>
+            <input id="eventId" type="text" value="solana-campus-week" required />
+
+            <label for="wallet">Wallet</label>
+            <input id="wallet" type="text" placeholder="11111111111111111111111111111111" required />
+
+            <button type="submit">Check Wallet</button>
+          </form>
+        </article>
+
+        <article class="card reveal stagger-2">
+          <h2>Proof Verification</h2>
+          <form id="txRefForm" class="form">
+            <label for="txRef">Tx Ref</label>
+            <input id="txRef" type="text" placeholder="txr_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" required />
+
+            <button type="submit">Check Tx Ref</button>
+          </form>
+        </article>
+      </section>
+
+      <section class="card reveal stagger-3">
+        <div class="result-head">
+          <h2>Event Explorer</h2>
+          <button id="refreshEvents" type="button" class="ghost-btn">Refresh</button>
+        </div>
+        <div id="eventsList" class="events-list">
+          Loading events...
+        </div>
+      </section>
+
+      <section class="card reveal stagger-4">
+        <div class="result-head">
+          <h2>Result</h2>
+          <span id="resultType" class="tag">Idle</span>
+        </div>
+        <div id="resultBody" class="result-body">
+          Submit form untuk mulai verifikasi.
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
