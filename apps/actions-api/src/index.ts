@@ -9,7 +9,9 @@ import { organizerAuth } from "./middleware/organizer-auth.js";
 import { createIpRateLimiter } from "./middleware/rate-limit.js";
 import { actionAuditLogger } from "./middleware/action-audit-log.js";
 
-async function bootstrap(): Promise<void> {
+let appPromise: Promise<express.Express> | null = null;
+
+async function createApp(): Promise<express.Express> {
   const app = express();
   const store = createEventStore(config.databaseUrl);
   await store.init();
@@ -61,13 +63,32 @@ async function bootstrap(): Promise<void> {
     res.status(500).json({ error: message });
   });
 
+  return app;
+}
+
+export async function getApp(): Promise<express.Express> {
+  if (!appPromise) {
+    appPromise = createApp();
+  }
+  return appPromise;
+}
+
+async function startLocalServer(): Promise<void> {
+  const app = await getApp();
   app.listen(config.port, () => {
     // Keep startup log short and explicit for local development.
     console.log(`actions-api listening on http://localhost:${config.port}`);
   });
 }
 
-bootstrap().catch((err) => {
-  console.error("Failed to start actions-api:", err);
-  process.exit(1);
-});
+export default async function handler(req: express.Request, res: express.Response): Promise<void> {
+  const app = await getApp();
+  app(req, res);
+}
+
+if (!process.env.VERCEL) {
+  startLocalServer().catch((err) => {
+    console.error("Failed to start actions-api:", err);
+    process.exit(1);
+  });
+}
