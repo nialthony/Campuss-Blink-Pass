@@ -179,7 +179,7 @@ export function createOrganizerRouter(store: EventStore): Router {
 
   router.get("/analytics/retention", async (req, res) => {
     const parsedQuery = parseTimeseriesQuery(req.query);
-    if (!parsedQuery.ok) {
+    if ("details" in parsedQuery) {
       res.status(400).json({ error: "Invalid query", details: parsedQuery.details });
       return;
     }
@@ -302,7 +302,7 @@ export function createOrganizerRouter(store: EventStore): Router {
     }
 
     const parsedQuery = parseTimeseriesQuery(req.query);
-    if (!parsedQuery.ok) {
+    if ("details" in parsedQuery) {
       res.status(400).json({ error: "Invalid query", details: parsedQuery.details });
       return;
     }
@@ -335,7 +335,7 @@ export function createOrganizerRouter(store: EventStore): Router {
     }
 
     const parsedQuery = parseParticipantsQuery(req.query);
-    if (!parsedQuery.ok) {
+    if ("details" in parsedQuery) {
       res.status(400).json({ error: "Invalid query", details: parsedQuery.details });
       return;
     }
@@ -357,7 +357,7 @@ export function createOrganizerRouter(store: EventStore): Router {
     }
 
     const parsedQuery = parseParticipantsQuery(req.query);
-    if (!parsedQuery.ok) {
+    if ("details" in parsedQuery) {
       res.status(400).json({ error: "Invalid query", details: parsedQuery.details });
       return;
     }
