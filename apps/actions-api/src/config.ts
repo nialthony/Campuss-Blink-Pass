@@ -12,6 +12,7 @@ const SOLANA_NETWORK = process.env.SOLANA_NETWORK ?? "devnet";
 const POAP_MINT_MODE = process.env.POAP_MINT_MODE ?? "mock";
 const POAP_MINTER_SECRET_KEY = process.env.POAP_MINTER_SECRET_KEY;
 const VERIFIER_WEB_BASE_URL = process.env.VERIFIER_WEB_BASE_URL ?? "http://localhost:3010";
+const DB_FALLBACK_TO_MEMORY = process.env.DB_FALLBACK_TO_MEMORY !== "0";
 
 export const config = {
   port: PORT,
@@ -25,5 +26,6 @@ export const config = {
   rateLimitMax: RATE_LIMIT_MAX,
   poapMintMode: POAP_MINT_MODE,
   poapMinterSecretKey: POAP_MINTER_SECRET_KEY,
-  verifierWebBaseUrl: VERIFIER_WEB_BASE_URL
+  verifierWebBaseUrl: VERIFIER_WEB_BASE_URL,
+  dbFallbackToMemory: DB_FALLBACK_TO_MEMORY
 };

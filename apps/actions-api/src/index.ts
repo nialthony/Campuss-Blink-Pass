@@ -13,8 +13,19 @@ let appPromise: Promise<express.Express> | null = null;
 
 async function createApp(): Promise<express.Express> {
   const app = express();
-  const store = createEventStore(config.databaseUrl);
-  await store.init();
+  let storeMode: "postgres" | "memory" = config.databaseUrl ? "postgres" : "memory";
+  let store = createEventStore(config.databaseUrl);
+  try {
+    await store.init();
+  } catch (error) {
+    if (!config.databaseUrl || !config.dbFallbackToMemory) {
+      throw error;
+    }
+    console.error("Failed to initialize postgres store. Falling back to memory store.", error);
+    store = createEventStore();
+    await store.init();
+    storeMode = "memory";
+  }
 
   app.use(
     cors({
@@ -29,7 +40,7 @@ async function createApp(): Promise<express.Express> {
     res.json({
       ok: true,
       service: "actions-api",
-      storeMode: config.databaseUrl ? "postgres" : "memory",
+      storeMode,
       timestamp: new Date().toISOString()
     });
   });
@@ -68,7 +79,10 @@ async function createApp(): Promise<express.Express> {
 
 export async function getApp(): Promise<express.Express> {
   if (!appPromise) {
-    appPromise = createApp();
+    appPromise = createApp().catch((error) => {
+      appPromise = null;
+      throw error;
+    });
   }
   return appPromise;
 }
@@ -82,8 +96,27 @@ async function startLocalServer(): Promise<void> {
 }
 
 export default async function handler(req: express.Request, res: express.Response): Promise<void> {
-  const app = await getApp();
-  app(req, res);
+  try {
+    const app = await getApp();
+    app(req, res);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unknown bootstrap error";
+    console.error("actions-api bootstrap error:", error);
+
+    if (typeof res.status === "function" && typeof res.json === "function") {
+      res.status(500).json({ error: "Function bootstrap failed", message });
+      return;
+    }
+
+    const legacyRes = res as unknown as {
+      statusCode: number;
+      setHeader(name: string, value: string): void;
+      end(payload: string): void;
+    };
+    legacyRes.statusCode = 500;
+    legacyRes.setHeader("content-type", "application/json; charset=utf-8");
+    legacyRes.end(JSON.stringify({ error: "Function bootstrap failed", message }));
+  }
 }
 
 if (!process.env.VERCEL) {
